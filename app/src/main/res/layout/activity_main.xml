@@ -21,6 +21,13 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
+        <Button
+            android:id="@+id/btnPageTambah"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:text="Tambah Data" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_data_mahasiswa"
             android:layout_width="match_parent"

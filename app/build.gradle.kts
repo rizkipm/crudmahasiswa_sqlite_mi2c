@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.rizki.crud_mahasiswa_sqlite_mi2c"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.rizki.crud_mahasiswa_sqlite_mi2c"
@@ -33,6 +33,10 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        viewBinding = true
+    }
+
 }
 
 dependencies {

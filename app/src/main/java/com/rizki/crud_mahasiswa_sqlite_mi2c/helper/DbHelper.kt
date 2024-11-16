@@ -44,6 +44,17 @@ class DbHelper  (context: Context, factory: SQLiteDatabase.CursorFactory?) :
     }
 
     // This method is for adding data in our database
+
+    fun insertDataMahasiswa(mhs: ModelMahasiswa) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(NAMA_MAHASISWA, mhs.nama)
+            put(NIM, mhs.nim)
+            put(JURUSAN, mhs.jurusan)
+        }
+        db.insert(TABLE_NAME, null, values)
+        db.close()
+    }
     fun addName(nama_mahasiswa : String, nim : String, jurusan : String ){
 
         // below we are creating
@@ -86,31 +97,51 @@ class DbHelper  (context: Context, factory: SQLiteDatabase.CursorFactory?) :
     }
 
     //get all data
-    fun getAllData() : MutableList<ModelMahasiswa>{
-        if(!databaseOpen){
-            database = INSTANCE.writableDatabase
-            databaseOpen = true //db nya kita open
+    fun getAllDataMahasiswa() : List<ModelMahasiswa>{
+        val mahasiswaList = mutableListOf<ModelMahasiswa>()
+        val db = readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME"
+        val cursor = db.rawQuery(query,null)
 
-            Log.i("Database", "Database Open")
+        while (cursor.moveToNext()){
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL))
+            val namaMahasiswa = cursor.getString(cursor.getColumnIndexOrThrow(NAMA_MAHASISWA))
+            val nim = cursor.getInt(cursor.getColumnIndexOrThrow(NIM))
+            val jurusan = cursor.getString(cursor.getColumnIndexOrThrow(JURUSAN))
+
+            Log.d("Databasehelper", "Fecthed ID : $id, namahasiswa: $namaMahasiswa")
+            val nMahasiswa = ModelMahasiswa(id, namaMahasiswa, nim, jurusan)
+            mahasiswaList.add(nMahasiswa)
         }
-
-        val data: MutableList<ModelMahasiswa> = ArrayList()
-        val cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME, null)
-        cursor.use { cur ->
-            if(cursor.moveToFirst()){
-                do {
-                    val mahasiswa = ModelMahasiswa()
-                    mahasiswa.id = cur.getInt(cur.getColumnIndex(ID_COL))
-                    mahasiswa.nama = cur.getString(cur.getColumnIndex(NAMA_MAHASISWA))
-                    mahasiswa.nim = cur.getInt(cur.getColumnIndex(NIM))
-                    mahasiswa.jurusan = cur.getString(cur.getColumnIndex(JURUSAN))
-                    data.add(mahasiswa)
-                }while (cursor.moveToNext())
-            }
-
-        }
-        return data
+        cursor.close()
+        db.close()
+        return mahasiswaList
     }
+//    fun getAllData() : MutableList<ModelMahasiswa>{
+//        if(!databaseOpen){
+//            database = INSTANCE.writableDatabase
+//            databaseOpen = true //db nya kita open
+//
+//            Log.i("Database", "Database Open")
+//        }
+//
+//        val data: MutableList<ModelMahasiswa> = ArrayList()
+//        val cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME, null)
+//        cursor.use { cur ->
+//            if(cursor.moveToFirst()){
+//                do {
+//                    val mahasiswa = ModelMahasiswa()
+//                    mahasiswa.id = cur.getInt(cur.getColumnIndex(ID_COL))
+//                    mahasiswa.nama = cur.getString(cur.getColumnIndex(NAMA_MAHASISWA))
+//                    mahasiswa.nim = cur.getInt(cur.getColumnIndex(NIM))
+//                    mahasiswa.jurusan = cur.getString(cur.getColumnIndex(JURUSAN))
+//                    data.add(mahasiswa)
+//                }while (cursor.moveToNext())
+//            }
+//
+//        }
+//        return data
+//    }
 
     companion object{
         // here we have defined variables for our database
