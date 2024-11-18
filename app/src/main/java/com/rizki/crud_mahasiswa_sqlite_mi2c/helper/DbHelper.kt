@@ -9,8 +9,8 @@ import android.util.Log
 import android.view.Display.Mode
 import com.rizki.crud_mahasiswa_sqlite_mi2c.model.ModelMahasiswa
 
-class DbHelper  (context: Context, factory: SQLiteDatabase.CursorFactory?) :
-    SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION){
+class DbHelper  (context: Context) :
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION){
 
         fun closeDatabase(){
             if(database.isOpen && databaseOpen){
@@ -53,6 +53,46 @@ class DbHelper  (context: Context, factory: SQLiteDatabase.CursorFactory?) :
             put(JURUSAN, mhs.jurusan)
         }
         db.insert(TABLE_NAME, null, values)
+        db.close()
+    }
+
+    fun updateMahasiswa(mhs: ModelMahasiswa){
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(NAMA_MAHASISWA, mhs.nama)
+            put(NIM, mhs.nim)
+            put(JURUSAN, mhs.jurusan)
+        }
+        val whereClause = "$ID_COL = ?"
+        val whereArgs = arrayOf(mhs.id.toString())//rubah id ke string
+
+        db.update(TABLE_NAME, values, whereClause, whereArgs)
+        db.close()
+    }
+
+    fun getMhsById(mhsId : Int): ModelMahasiswa{
+        val db = readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME WHERE $ID_COL = $mhsId"
+        val cursor = db.rawQuery(query, null)
+        cursor.moveToNext()
+
+        val id = cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL))
+        val nama = cursor.getString(cursor.getColumnIndexOrThrow(NAMA_MAHASISWA))
+        val nim = cursor.getInt(cursor.getColumnIndexOrThrow(NIM))
+        val jurusan = cursor.getString(cursor.getColumnIndexOrThrow(JURUSAN))
+
+        cursor.close()
+        db.close()
+        return ModelMahasiswa(id, nama, nim, jurusan)
+
+    }
+
+    fun deleteMahasiswa(mhsId : Int){
+        val db = writableDatabase
+        val whereClause = "$ID_COL = ?"
+        val whereArgs = arrayOf(mhsId.toString())
+
+        db.delete(TABLE_NAME, whereClause, whereArgs)
         db.close()
     }
     fun addName(nama_mahasiswa : String, nim : String, jurusan : String ){

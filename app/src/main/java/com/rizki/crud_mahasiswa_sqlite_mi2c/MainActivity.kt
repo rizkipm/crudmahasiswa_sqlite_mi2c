@@ -22,11 +22,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        db  = DbHelper(this, null)
+        db  = DbHelper(this)
         mahasiswaAdapater = MahasiswaAdapter(db.getAllDataMahasiswa(), this)
 
         binding.rvDataMahasiswa.layoutManager = LinearLayoutManager(this)
         binding.rvDataMahasiswa.adapter = mahasiswaAdapater
+
+        //Silahkan buat detail page
+        //ketika di klik item nya akan pindah ke page lain
+
 
         binding.btnPageTambah.setOnClickListener{
             val intent = Intent(this, TambahDataMahasiswaActivity::class.java)
